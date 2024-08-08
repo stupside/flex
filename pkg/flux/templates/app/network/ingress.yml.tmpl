@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Application }}
+  namespace: apps
+  labels:
+    app: {{ .Application }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .ClusterIssuer }}
+spec:
+  ingressClassName: {{ .IngressClass }}
+  tls:
+    - hosts:
+        {{ range .Rules }}
+        - {{ .Subdomain }}.{{ .Domain }}
+        {{ end }}
+      secretName: {{ .Application }}-tls
+
+  rules:
+    {{ range .Rules }}
+    - host: {{ .Subdomain }}.{{ .Domain }}
+      http:
+        paths:
+        {{ range .Paths }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Service }}
+                port:
+                  number: {{ .Port }}
+        {{ end }}
+    {{ end }}

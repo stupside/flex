@@ -1,0 +1,14 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: {{ .Tenant }}
+  namespace: apps
+spec:
+  interval: 5m
+  serviceAccountName: {{ .Tenant }}
+  path: .
+  sourceRef:
+    name: {{ .Tenant }}
+    kind: GitRepository
+  prune: true

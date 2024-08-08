@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: {{ .Application }}
+  namespace: apps
+spec:
+  releaseName: {{ .Application }} 
+  serviceAccountName: {{ .Tenant }}
+  chart:
+    spec:
+      chart: {{ .ChartName }}
+      version: "{{ .ChartVersion }}"
+      sourceRef:
+        name: {{ .ChartName }}
+        kind: HelmRepository
+        namespace: flux-system
+  interval: 30m
+  install:
+    remediation:
+      retries: 3
+  values:
